@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # 1. MySQL Datenbank
+  db:
+    image: mysql:8.0
+    container_name: django_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: my_django_db
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: secure_password
+      MYSQL_ROOT_PASSWORD: super_root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 2. Redis (für Caching & Django Channels / Websockets)
+  redis:
+    image: redis:7-alpine
+    container_name: django_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # 3. Webserver (Django mit Daphne für HTTP + Websockets)
+  web:
+    build: .
+    container_name: django_web
+    restart: always
+    # Daphne startet die ASGI-App, damit Websockets out-of-the-box funktionieren
+    command: daphne -b 0.0.0.0 -p 8000 izz.asgi:application
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - DB_HOST=db
+      - DB_NAME=my_django_db
+      - DB_USER=django_user
+      - DB_PASSWORD=secure_password
+      - REDIS_URL=redis://redis:6379/1
+    depends_on:
+      - db
+      - redis
+
+  # 4. Celery Worker (Führt die Aufgaben aus)
+  celery:
+    build: .
+    container_name: django_celery
+    command: celery -A my_project worker --loglevel=info
+    volumes:
+      - .:/code
+    environment:
+      - DB_HOST=db
+      - DB_NAME=my_django_db
+      - DB_USER=django_user
+      - DB_PASSWORD=secure_password
+      - REDIS_URL=redis://redis:6379/1
+    depends_on:
+      - db
+      - redis
+
+  # 5. Celery Beat (Der Scheduler / Planer)
+  celery-beat:
+    build: .
+    container_name: django_celery_beat
+    command: celery -A my_project beat --loglevel=info
+    volumes:
+      - .:/code
+    environment:
+      - DB_HOST=db
+      - DB_NAME=my_django_db
+      - DB_USER=django_user
+      - DB_PASSWORD=secure_password
+      - REDIS_URL=redis://redis:6379/1
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  mysql_data:
