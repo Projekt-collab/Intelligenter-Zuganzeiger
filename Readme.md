@@ -1,3 +1,6 @@
+# Intelligenter-Zuganzeiger
+Echtzeit-Stellwerk-Steuerung mit Django, Redis und WebSockets
+
 # 1. Virtuelle Umgebung erstellen (nur einmalig nötig)
 python -m venv venv
 
