@@ -11,7 +11,7 @@ venv\Scripts\activate
 pip install -r requires.txt
 # 4. Neue App erstellen
 py manage.py startapp <app_name>
-# Wir fügen "docker compose exec web" für jeden Befehl hinzu, damit wir in docker kontext arbeiten können
+# Wir fügen (docker compose exec web) für jeden Befehl hinzu, damit wir in docker kontext arbeiten können
 # 5. Neue Migration erstellen
 docker compose exec web python manage.py makemigrations
 # 6. Migrationen ausführen
