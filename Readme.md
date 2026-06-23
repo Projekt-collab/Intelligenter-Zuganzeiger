@@ -15,13 +15,15 @@ venv\Scripts\activate
 pip install -r requires.txt
 
 # 4. Neue App erstellen
-python manage.py startapp <app_name>
+py manage.py startapp <app_name>
+
+# Wir fügen "docker compose exec web" für jeder Befehl hinzu, damit wir in docker kontext arbeiten können
 
 # 5. Neue Migration erstellen
-python manage.py makemigrations
+docker compose exec web python manage.py makemigrations
 
 # 6. Migrationen ausführen
-python manage.py migrate
+docker compose exec web python manage.py migrate
 
 # 7. Admin-Nutzer erstellen
-python manage.py createsuperuser
+docker compose exec web python manage.py createsuperuser
