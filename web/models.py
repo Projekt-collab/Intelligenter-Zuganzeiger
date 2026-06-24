@@ -1,6 +1,3 @@
-
-
-
 from django.db import models
 
 
@@ -16,6 +13,10 @@ class Zug(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='WARTET')
     aktualisiert_am = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Zug"
+        verbose_name_plural = "Züge"
+
     def __str__(self):
         return f"{self.zug_nummer} ({self.get_status_display()})"
 
@@ -25,6 +26,10 @@ class Gleis(models.Model):
     # Der Sensor liefert True (belegt) oder False (frei)
     sensor_belegt = models.BooleanField(default=False, verbose_name="Sensor: Gleis belegt?")
     laenge_meter = models.PositiveIntegerField(default=300, verbose_name="Gleislänge in Metern")
+
+    class Meta:
+        verbose_name = "Gleis"
+        verbose_name_plural = "Gleise"
 
     def __str__(self):
         zustand = "🔴 BELEGT" if self.sensor_belegt else "🟢 FREI"
@@ -45,6 +50,8 @@ class Fahrstrasse(models.Model):
     class Meta:
         # Einzigartigkeits-Constraint: Ein Gleis darf nicht doppelt aktiv reserviert werden!
         # Das fängt Kollisionen bereits auf Datenbank-Ebene ab.
+        verbose_name = "Fahrstraße"
+        verbose_name_plural = "Fahstraßen"
         constraints = [
             models.UniqueConstraint(
                 fields=['gleis'],
@@ -52,6 +59,7 @@ class Fahrstrasse(models.Model):
                 name='einzigartige_aktive_gleis_reservierung'
             )
         ]
+
 
     def __str__(self):
         status = "Aktiv" if self.ist_aktiv else "Beendet"
@@ -70,6 +78,10 @@ class StellwerkAnfrage(models.Model):
     anfrage_zeit = models.DateTimeField(auto_now_add=True)
     ergebnis = models.CharField(max_length=20, choices=ERGEBNIS_CHOICES, default='OFFEN')
     zugewiesenes_gleis = models.ForeignKey(Gleis, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Stellwerkanfrage"
+        verbose_name_plural = "Stellwerkanfragen"
 
     def __str__(self):
         return f"Anfrage von {self.zug.zug_nummer} um {self.anfrage_zeit.strftime('%H:%M:%S')}: {self.get_ergebnis_display()}"
