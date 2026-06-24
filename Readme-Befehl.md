@@ -19,3 +19,6 @@ Da das Projekt komplett in Docker läuft, müssen alle Django-Befehle im Kontext
 
 * **Neue Migrationen erstellen (nach Model-Änderungen):**
   docker compose exec web python manage.py makemigrations
+
+* **Static Dateien generiert**
+  docker-compose exec web python manage.py collectstatic --noinput

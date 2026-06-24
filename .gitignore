@@ -1,1 +1,4 @@
 celerybeat-schedule
+static/
+.idea
+.venv
