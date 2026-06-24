@@ -78,16 +78,13 @@ ASGI_APPLICATION = 'izz.asgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
+'default': {
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DB_NAME', 'my_django_db'),
         'USER': os.environ.get('DB_USER', 'django_user'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'secure_password'),
-        'HOST': os.environ.get('DB_HOST', 'db'),
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'HOST': os.environ.get('DB_HOST', 'db'),       # Verweist auf den Namen des Docker-Services 'db'
+        'PORT': '5432',     # Der Standard-Port von PostgreSQL im Container
     }
 }
 
