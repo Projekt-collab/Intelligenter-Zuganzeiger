@@ -1,19 +1,17 @@
-
 services:
-  # 1. MySQL Datenbank
+  # 1. PostgreSQL Datenbank
   db:
-    image: mysql:8.0
+    image: postgres:16-alpine
     container_name: django_db
     restart: always
     environment:
-      MYSQL_DATABASE: my_django_db
-      MYSQL_USER: django_user
-      MYSQL_PASSWORD: secure_password
-      MYSQL_ROOT_PASSWORD: super_root_password
+      POSTGRES_DB: my_django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: secure_password
     ports:
-      - "3307:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
   # 2. Redis (für Caching & Django Channels / Websockets)
   redis:
@@ -80,4 +78,4 @@ services:
       - redis
 
 volumes:
-  mysql_data:
+  postgres_data:
