@@ -33,6 +33,10 @@ jobs:
     - name: Run Migrations
       run: docker compose exec -T web python manage.py migrate
 
+    # 5. Fixtures laden
+    - name: Load Fixtures
+      run: docker compose exec web python manage.py loaddata default_data
+
     # 5. Django System-Checks laufen lassen (prüft Einstellungen und Models)
     - name: Run Django System Checks
       run: docker compose exec -T web python manage.py check

@@ -1,0 +1,94 @@
+[
+  {
+    "model": "web.zug",
+    "pk": 1,
+    "fields": {
+      "zug_nummer": "ICE 223",
+      "status": "WARTET",
+      "aktualisiert_am": "2026-06-24T12:00:00Z"
+    }
+  },
+  {
+    "model": "web.zug",
+    "pk": 2,
+    "fields": {
+      "zug_nummer": "ICE 429",
+      "status": "WARTET",
+      "aktualisiert_am": "2026-06-24T12:00:00Z"
+    }
+  },
+  {
+    "model": "web.zug",
+    "pk": 3,
+    "fields": {
+      "zug_nummer": "RE 76",
+      "status": "GEPARKT",
+      "aktualisiert_am": "2026-06-24T12:00:00Z"
+    }
+  },
+
+  {
+    "model": "web.gleis",
+    "pk": 1,
+    "fields": {
+      "gleis_nummer": "1a",
+      "sensor_belegt": true,
+      "laenge_meter": 350
+    }
+  },
+  {
+    "model": "web.gleis",
+    "pk": 2,
+    "fields": {
+      "gleis_nummer": "1b",
+      "sensor_belegt": false,
+      "laenge_meter": 350
+    }
+  },
+  {
+    "model": "web.gleis",
+    "pk": 3,
+    "fields": {
+      "gleis_nummer": "2a",
+      "sensor_belegt": true,
+      "laenge_meter": 350
+    }
+  },
+  {
+    "model": "web.gleis",
+    "pk": 4,
+    "fields": {
+      "gleis_nummer": "2b",
+      "sensor_belegt": false,
+      "laenge_meter": 350
+    }
+  },
+  {
+    "model": "web.gleis",
+    "pk": 5,
+    "fields": {
+      "gleis_nummer": "3a",
+      "sensor_belegt": true,
+      "laenge_meter": 350
+    }
+  },
+  {
+    "model": "web.gleis",
+    "pk": 6,
+    "fields": {
+      "gleis_nummer": "3b",
+      "sensor_belegt": false,
+      "laenge_meter": 350
+    }
+  },
+
+  {
+    "model": "web.fahrstrasse",
+    "pk": 1,
+    "fields": {
+      "zug": 3,
+      "gleis": 6,
+      "freigeschaltet_um": "2026-06-24T12:00:00Z"
+    }
+  }
+]
