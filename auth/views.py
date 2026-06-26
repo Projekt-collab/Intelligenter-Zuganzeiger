@@ -15,7 +15,7 @@ def register_view(request):
     else:
         form = UserRegistrationForm()
 
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, 'register.html', {'form': form})
 
 
 # 2. Dashboard mit Rollenprüfung
@@ -30,7 +30,7 @@ def dashboard_view(request):
         'is_manager': is_manager,
     }
 
-    return render(request, 'users/dashboard.html', context)
+    return render(request, 'dashboard.html', context)
 
 from django.core.exceptions import PermissionDenied
 

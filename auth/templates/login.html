@@ -1,0 +1,33 @@
+{% extends 'basis.html' %}
+
+{% block title %}Anmelden - ProjektPortal{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200 mt-10">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">In Ihr Konto einloggen</h2>
+    
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                <div class="mt-1">
+                    {# Wir fügen CSS-Klassen direkt über Django-Templates hinzu #}
+                    {{ field }}
+                </div>
+                {% if field.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+            Einloggen
+        </button>
+    </form>
+    
+    <p class="mt-4 text-center text-sm text-gray-600">
+        Noch kein Konto? <a href="{% url 'register' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Jetzt registrieren</a>
+    </p>
+</div>
+{% endblock %}

@@ -61,6 +61,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "web/templates",
+            BASE_DIR / "auth/templates",
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -146,3 +147,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+LOGIN_REDIRECT_URL = 'dashboard'
+
+# Wohin nach dem Logout weiterleiten:
+LOGOUT_REDIRECT_URL = 'login'
