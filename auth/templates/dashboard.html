@@ -1,0 +1,24 @@
+{% extends 'basis.html' %}
+
+{% block title %}Dashboard - ProjektPortal{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Willkommen zurück, {{ user.username }}!</h1>
+    <p class="text-gray-600 mb-6">Hier ist die Übersicht deiner Rollen und Berechtigungen.</p>
+
+    {% if is_admin %}
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r-md">
+            <h3 class="text-lg font-semibold text-red-800">Admin-Bereich</h3>
+            <p class="text-sm text-red-700 mt-1">Dieser Inhalt ist extrem sensibel und wird nur Administratoren angezeigt.</p>
+        </div>
+    {% endif %}
+
+    {% if is_manager or is_admin %}
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-md">
+            <h3 class="text-lg font-semibold text-green-800">Manager-Bereich</h3>
+            <p class="text-sm text-green-700 mt-1">Sichtbar für Manager und Administratoren. Hier kannst du Projekte verwalten.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
