@@ -6,5 +6,8 @@ def lokfuehrer_index(request):
 
     return TemplateResponse(request, "lokfuehrer.html", {})
 
+def dispatcher_index(request):
+    return TemplateResponse(request, "dispatcher.html", {})
+
 
 
