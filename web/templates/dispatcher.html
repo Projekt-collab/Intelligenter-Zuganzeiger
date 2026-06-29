@@ -1,0 +1,62 @@
+{% extends 'basis.html' %}
+
+{% block title %}Dispatcher Stellwerk{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-5xl mx-auto bg-slate-800 border-3 border-slate-700 rounded-lg p-6 shadow-xl font-mono text-slate-200">
+
+    <header class="flex justify-between items-center border-b border-slate-700 pb-3 mb-10">
+        <h2 class="text-xl font-bold tracking-wide text-slate-100">Zentralstellwerk - Bereich Nord</h2>
+        <div class="text-sm bg-slate-900/50 px-3 py-1.5 rounded-md border border-slate-700">
+            System: <span class="text-emerald-400 font-bold animate-pulse">ONLINE</span>
+        </div>
+    </header>
+
+    <main class="relative flex items-center justify-start h-72 bg-slate-950 border border-slate-800 rounded-md p-6 overflow-hidden">
+
+        <div class="w-1/4 pr-2">
+            <div class="relative h-2 bg-red-500 rounded-full flex items-center">
+                <span class="absolute -top-6 left-0 text-xs text-slate-400 whitespace-nowrap">Hauptgleis 1</span>
+                <div class="absolute left-6 bg-slate-50 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(239,68,68,0.7)] border border-red-300">
+                    ICE 720
+                </div>
+            </div>
+        </div>
+
+        <div class="w-1/12 h-full relative">
+            <div class="absolute top-[28%] left-0 w-full h-1 bg-slate-600 origin-bottom-left rotate-[22deg]"></div>
+            <div class="absolute top-1/2 left-0 w-full h-1 bg-red-500"></div>
+            <div class="absolute top-[70%] left-0 w-full h-1 bg-slate-600 origin-top-left -rotate-[22deg]"></div>
+        </div>
+
+        <div class="w-8/12 h-5/6 flex flex-col justify-between pl-2">
+
+            <div class="relative h-2 bg-emerald-500 rounded-full flex items-center">
+                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis A (Frei)</span>
+            </div>
+
+            <div class="relative h-2 bg-red-500 rounded-full flex items-center">
+                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis B (Besetzt)</span>
+                <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
+                    RE 4200
+                </div>
+            </div>
+
+            <div class="relative h-2 bg-amber-500 rounded-full flex items-center">
+                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis C (Gesperrt)</span>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="mt-8 flex gap-4">
+        <button class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm px-4 py-2.5 rounded-md shadow-md transition-colors cursor-pointer">
+            Weiche schalten
+        </button>
+        <button class="bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-bold text-sm px-4 py-2.5 rounded-md shadow-md transition-colors cursor-pointer">
+            Nothalt (Zentral)
+        </button>
+    </footer>
+</div>
+{% endblock %}
