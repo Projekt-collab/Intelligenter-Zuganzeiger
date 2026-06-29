@@ -1,1 +1,112 @@
-Hello
+{% extends "basis.html" %}
+
+{% block title %} Lokfuehrer {% endblock %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block content %}
+<!-- Контейнер кабины локомотива -->
+<div class="w-full h-[65vh] min-h-[400px] bg-slate-900 rounded-xl overflow-hidden shadow-2xl border-4 border-slate-700 flex flex-col">
+
+    <!-- ВЕРХНЯЯ ПОЛОВИНА: Лобовое стекло с тройной развилкой -->
+    <div class="relative flex-1 w-full overflow-hidden border-b-8 border-slate-800">
+        <!-- Небо и Земля (Градиентный фон) -->
+        <div class="absolute inset-0 bg-gradient-to-b from-sky-400 via-sky-200 to-transparent z-0"></div>
+        <div class="absolute bottom-0 w-full h-[45%] bg-gradient-to-b from-slate-500 via-slate-600 to-slate-700 z-0"></div>
+
+        <!-- ТРОЙНАЯ РАЗВИЛКА (НАЛЕВО, ПРЯМО, НАПРАВО) -->
+        <svg class="absolute bottom-0 left-0 w-full h-[45%] z-10" viewBox="0 0 1000 100" preserveAspectRatio="none">
+
+            <!-- СЛОЙ ШПАЛ -->
+            <!-- Нижняя общая колея (Идет строго по центру) -->
+            <path d="M 350,100 L 650,100 L 638,82 L 362,82 Z" fill="#2d3748"></path>
+            <path d="M 380,70  L 620,70  L 610,58 L 390,58 Z" fill="#334155" opacity="0.9"></path>
+
+            <!-- Точка разветвления (Шпалы начинают множиться) -->
+            <path d="M 400,48  L 600,48  L 593,38 L 407,38 Z" fill="#334155" opacity="0.8"></path>
+
+            <!-- Три направления у горизонта -->
+            <!-- Левая ветка вдали -->
+            <path d="M 180,12 L 230,12 L 232,4 L 182,4 Z" fill="#475569" opacity="0.6"></path>
+            <!-- Центральная ветка вдали -->
+            <path d="M 475,12 L 525,12 L 522,4 L 478,4 Z" fill="#475569" opacity="0.6"></path>
+            <!-- Правая ветка вдали -->
+            <path d="M 770,12 L 820,12 L 818,4 L 768,4 Z" fill="#475569" opacity="0.6"></path>
+
+
+            <!-- СЛОЙ СВЕТЯЩИХСЯ РЕЛЬСОВ -->
+
+            <!-- 1. ЦЕНТРАЛЬНЫЙ ПУТЬ (Идет от низа до самого горизонта строго по центру) -->
+            <path d="M 380 100 L 420 50 L 480 0" fill="none" stroke="#e2e8f0" stroke-width="3" opacity="0.8"></path>
+            <path d="M 620 100 L 580 50 L 520 0" fill="none" stroke="#e2e8f0" stroke-width="3" opacity="0.8"></path>
+
+            <!-- 2. ЛЕВОЕ НАПРАВЛЕНИЕ (Плавное ответвление по дуге) -->
+            <!-- Левый внешний рельс -->
+            <path d="M 380 100 L 420 50 Q 380 35, 180 0" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"></path>
+            <!-- Левый внутренний рельс -->
+            <path d="M 620 100 L 580 50 Q 440 42, 230 0" fill="none" stroke="#cbd5e1" stroke-width="3" opacity="0.85"></path>
+
+            <!-- 3. ПРАВОЕ НАПРАВЛЕНИЕ (Плавное ответвление по дуге) -->
+            <!-- Правый внутренний рельс -->
+            <path d="M 380 100 L 420 50 Q 560 42, 770 0" fill="none" stroke="#cbd5e1" stroke-width="3" opacity="0.85"></path>
+            <!-- Правый внешний рельс -->
+            <path d="M 620 100 L 580 50 Q 620 35, 820 0" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"></path>
+
+            <!-- Остряки стрелок (Два направляющих элемента в зоне разделения) -->
+            <path d="M 450 44 L 465 44 L 460 50 Z" fill="#94a3b8" opacity="0.9"></path>
+            <path d="M 550 44 L 535 44 L 540 50 Z" fill="#94a3b8" opacity="0.9"></path>
+        </svg>
+
+        <!-- Немецкий светофор -->
+        <div class="absolute top-[15%] right-[12%] w-8 h-24 bg-neutral-950 border-2 border-neutral-700 rounded-md flex flex-col justify-around items-center py-1 shadow-lg z-20">
+            <div class="w-5 h-5 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444] border border-red-400/50"></div>
+            <div class="w-5 h-5 rounded-full bg-amber-500 shadow-[0_0_12px_#f59e0b] border border-amber-400/50"></div>
+            <div class="w-5 h-5 rounded-full bg-emerald-500 shadow-[0_0_12px_#10b981] border border-emerald-400/50"></div>
+            <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-2 h-8 bg-neutral-950"></div>
+        </div>
+
+        <!-- Блик на стекле -->
+        <div class="absolute inset-0 bg-gradient-to-tr from-white/5 via-white/10 to-transparent pointer-events-none z-20"></div>
+    </div>
+
+    <!-- НИЖНЯЯ ПОЛОВИНА: Пульт управления (Dashboard) -->
+    <div class="flex-1 w-full bg-gradient-to-b from-slate-800 to-slate-950 border-t-4 border-red-600 shadow-[inset_0_10px_20px_rgba(0,0,0,0.6)] flex justify-between items-center px-6 py-4 gap-4">
+
+        <!-- Монитор 1 -->
+        <div class="w-[33%] h-full bg-neutral-900 border-4 border-slate-700 rounded-lg p-2 shadow-inner relative flex items-center justify-center">
+            <div class="w-full h-full bg-[#002b36] rounded border border-cyan-900 p-2 font-mono text-cyan-400 text-xs sm:text-sm overflow-hidden select-none">
+                <p class="text-emerald-400 font-bold mb-1">▶ SYSTEM OK</p>
+                <p>GESCHW: 120 km/h</p>
+                <p>LINIE: RE 1 (BERLIN)</p>
+                <p>BREMSE: LOESEN</p>
+            </div>
+        </div>
+
+        <!-- Монитор 2 -->
+        <div class="w-[33%] h-full bg-neutral-900 border-4 border-slate-700 rounded-lg p-2 shadow-inner relative flex items-center justify-center">
+            <div class="w-full h-full bg-[#002b36] rounded border border-cyan-900 p-2 font-mono text-cyan-400 text-xs sm:text-sm overflow-hidden select-none">
+                <p class="text-amber-400 font-bold mb-1">⚡ LZB / PZB AKTIV</p>
+                <p>ZUGKRAFT: 45 %</p>
+                <p class="text-rose-400">NOTBREMSE: BEREIT</p>
+                <p>SPANNUNG: 15 kV</p>
+            </div>
+        </div>
+
+        <!-- Кнопки управления -->
+        <div class="w-[30%] h-full flex items-center justify-around gap-2">
+            <div class="relative w-5 h-20 bg-zinc-600 rounded shadow-md flex-shrink-0">
+                <div class="absolute -top-1 -left-2 w-9 h-5 bg-rose-700 rounded border border-black shadow cursor-pointer"></div>
+            </div>
+            <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Warten</button>
+            <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Fahren</button>
+            <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-600 border-4 border-neutral-900 text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Gleis<br>anfr.</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
