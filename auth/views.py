@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm
+from web.models import Zug, Fahrt
+from django.utils import timezone
+from .forms import UserRegistrationForm, FahrtStartenForm
+from django.core.exceptions import PermissionDenied
 
 
 # 1. Registrierung
@@ -21,18 +24,30 @@ def register_view(request):
 # 2. Dashboard mit Rollenprüfung
 @login_required
 def dashboard_view(request):
-    # Prüfen, ob der Benutzer in bestimmten Gruppen existiert
-    is_admin = request.user.groups.filter(name='Admin').exists()
-    is_manager = request.user.groups.filter(name='Manager').exists()
+    aktuelle_fahrt = Fahrt.objects.filter(
+        lokfuehrer=request.user,
+        fahrt_ende__isnull=True
+    ).first()
+    
+    if aktuelle_fahrt:
+        return redirect('lokfuehrer')
 
-    context = {
-        'is_admin': is_admin,
-        'is_manager': is_manager,
-    }
+    if request.method == 'POST':
+        form = FahrtStartenForm(request.POST)
+        if form.is_valid():
+            # commit=False sorgt dafür, dass die Fahrt noch nicht in die DB gespeichert wird
+            fahrt = form.save(commit=False)
+            fahrt.lokfuehrer = request.user
+            fahrt.fahrt_beginn = timezone.now()
+            fahrt.save()
 
-    return render(request, 'dashboard.html', context)
+            return redirect('lokfuehrer')
+    else:
+        form = FahrtStartenForm()
 
-from django.core.exceptions import PermissionDenied
+    return render(request, 'dashboard.html', {'form': form})
+
+
 
 def group_required(group_names=[]):
     def decorator(view_func):

@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+from django.db.models import Q
 
 
 class Zug(models.Model):
@@ -12,6 +14,13 @@ class Zug(models.Model):
     zug_nummer = models.CharField(max_length=20, unique=True, verbose_name="Zug-ID (z.B. ICE 721)")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='WARTET')
     aktualisiert_am = models.DateTimeField(auto_now=True)
+    lokfuehrer = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='Fahrt',
+        related_name="zuege",
+        blank=True,
+        verbose_name="Lokführer"
+    )
 
     class Meta:
         verbose_name = "Zug"
@@ -20,6 +29,35 @@ class Zug(models.Model):
     def __str__(self):
         return f"{self.zug_nummer} ({self.get_status_display()})"
 
+
+class Fahrt(models.Model):
+    zug = models.ForeignKey(Zug, on_delete=models.CASCADE)
+    lokfuehrer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    fahrt_beginn = models.DateTimeField(null=True, blank=True, verbose_name="Fahrtbeginn")
+    fahrt_ende = models.DateTimeField(null=True, blank=True, verbose_name="Fahrtende")
+
+    class Meta:
+        verbose_name = "Fahrt"
+        verbose_name_plural = "Fahrten"
+
+        # Hier kommen die Sicherheitsregeln rein:
+        constraints = [
+            # Regel 1: Ein Lokführer darf maximal EINE aktive Fahrt (fahrt_ende ist leer) haben
+            models.UniqueConstraint(
+                fields=['lokfuehrer'],
+                condition=Q(fahrt_ende__isnull=True),
+                name='ein_lokfuehrer_pro_aktive_fahrt'
+            ),
+            # Regel 2: Ein Zug darf maximal EINE aktive Fahrt haben
+            models.UniqueConstraint(
+                fields=['zug'],
+                condition=Q(fahrt_ende__isnull=True),
+                name='ein_zug_pro_aktive_fahrt'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.lokfuehrer} fährt {self.zug}"
 
 class Gleis(models.Model):
     gleis_nummer = models.CharField(max_length=10, unique=True, verbose_name="Gleisnummer")
