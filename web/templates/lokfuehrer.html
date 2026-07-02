@@ -1,10 +1,6 @@
 {% extends "basis.html" %}
 
-{% block title %} Lokfuehrer {% endblock %}
-
-{% block style %}
-
-{% endblock %}
+{% block title %} Lockfuehrer {% endblock %}
 
 {% block content %}
 <!-- Контейнер кабины локомотива -->
@@ -81,6 +77,8 @@
                 <p>GESCHW: 120 km/h</p>
                 <p>LINIE: RE 1 (BERLIN)</p>
                 <p>BREMSE: LOESEN</p>
+                <p>LOCKFÜHRERNAME: {{ user.username }}</p>
+                <p>ZUGINFO: {{ aktuelle_fahrt }}</p>
             </div>
         </div>
 
@@ -102,6 +100,17 @@
             <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Warten</button>
             <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Fahren</button>
             <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-600 border-4 border-neutral-900 text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Gleis<br>anfr.</button>
+            {% if aktuelle_fahrt %}
+                <form method="POST" action="{% url 'fahrt_beenden' aktuelle_fahrt.id %}">
+                    {% csrf_token %}
+                        <button type="submit" class="w-full sm:w-auto justify-center inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-5 rounded-lg shadow-sm transition cursor-pointer">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Fahrt jetzt beenden
+                        </button>
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>

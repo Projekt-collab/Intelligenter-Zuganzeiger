@@ -1,6 +1,7 @@
-from django import forms
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from web.models import Fahrt, Zug
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -25,3 +26,27 @@ class UserRegistrationForm(UserCreationForm):
         if selected_group:
             user.groups.add(selected_group)
         return user
+
+
+class FahrtStartenForm(forms.ModelForm):
+    # Wir überschreiben __init__, um das Queryset dynamisch und fehlerfrei zu laden
+    def __init__(self, *source, **kwargs):
+        super().__init__(*source, **kwargs)
+
+        # 1. Holen Sie sich die IDs aller Züge, die JETZT gerade fahren (fahrt_ende ist leer)
+        aktive_zug_ids = Fahrt.objects.filter(fahrt_ende__isnull=True).values_list('zug_id', flat=True)
+
+        # 2. Zeige alle Züge, deren ID NICHT in dieser Liste der aktiven Züge steckt
+        self.fields['zug'].queryset = Zug.objects.exclude(id__in=aktive_zug_ids)
+
+    zug = forms.ModelChoiceField(
+        queryset=Zug.objects.all(),  # Wird oben in __init__ sicher überschrieben
+        empty_label="-- Bitte Zug auswählen --",
+        widget=forms.Select(attrs={
+            'class': 'block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 focus:outline-none transition appearance-none cursor-pointer text-sm'
+        })
+    )
+
+    class Meta:
+        model = Fahrt
+        fields = ['zug']
