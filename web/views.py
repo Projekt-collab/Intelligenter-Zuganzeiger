@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from web.models import Zug, Fahrt
+from web.models import Zug, Fahrt, Fahrstrasse
+
 
 # Create your views here.
 @login_required
@@ -41,10 +42,22 @@ def dispatcher_index(request):
 def fahrt_beenden_view(request, fahrt_id):
     # Wir holen die Fahrt anhand der ID und stellen sicher, dass sie auch diesem User gehört
     fahrt = get_object_or_404(Fahrt, id=fahrt_id, lokfuehrer=request.user, fahrt_ende__isnull=True)
-
-    # Fahrt-Ende auf die aktuelle Uhrzeit setzen
     fahrt.fahrt_ende = timezone.now()
     fahrt.save()
+
+    zug = fahrt.zug
+    zug.status = "WARTET"
+    zug.save()
+
+    fahrstrasse = Fahrstrasse.objects.filter(zug=zug, ist_aktiv=True, freigeschaltet_um__isnull=True).first()
+    if fahrstrasse:
+        fahrstrasse.fahrt_ende = timezone.now()
+        fahrstrasse.ist_aktiv = False
+        fahrstrasse.save()
+
+        gleis = fahrstrasse.gleis
+        gleis.sensor_belegt = False
+        gleis.save()
 
     # Nach dem Beenden laden wir das Dashboard neu
     return redirect('dashboard')
