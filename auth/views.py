@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from web.models import Zug, Fahrt
 from django.utils import timezone
 from .forms import UserRegistrationForm, FahrtStartenForm
@@ -24,6 +24,11 @@ def register_view(request):
 # 2. Dashboard mit Rollenprüfung
 @login_required
 def dashboard_view(request):
+    ist_dispatcher = request.user.groups.filter(name='Dispatcher').exists()
+
+    if ist_dispatcher:
+        return redirect('dispatcher')
+
     aktuelle_fahrt = Fahrt.objects.filter(
         lokfuehrer=request.user,
         fahrt_ende__isnull=True

@@ -19,16 +19,22 @@ def lokfuehrer_index(request):
     if not ist_lokfuehrer:
         messages.warning(request, "Sie sind kein Lockführer")
         return redirect('register')
-    elif not aktuelle_fahrt:
-        messages.error(request, "Sie haben keine Lock")
+
+    if not aktuelle_fahrt:
+        return redirect('dashboard')
 
     return TemplateResponse(request, "lokfuehrer.html", {
         'aktuelle_fahrt': aktuelle_fahrt
     })
 
+@login_required
 def dispatcher_index(request):
-    return TemplateResponse(request, "dispatcher.html", {})
+    ist_dispatcher = request.user.groups.filter(name='Dispatcher').exists()
+    if not ist_dispatcher:
+        messages.warning(request, "Sie sind kein Dispatcher")
+        return redirect('register')
 
+    return TemplateResponse(request, "dispatcher.html", {})
 
 @login_required
 @require_POST  # Sorgt dafür, dass die Fahrt nur per POST-Methode (Sicherheits-Button) beendet werden kann
