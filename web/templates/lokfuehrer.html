@@ -98,8 +98,8 @@
                 <div class="absolute -top-1 -left-2 w-9 h-5 bg-rose-700 rounded border border-black shadow cursor-pointer"></div>
             </div>
             <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Warten</button>
-            <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Fahren</button>
-            <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-600 border-4 border-neutral-900 text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Gleis<br>anfr.</button>
+            <button id="fahren-btn" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Fahren</button>
+            <button id="gleis-anfrage-btn" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-600 border-4 border-neutral-900 text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Gleis<br>anfr.</button>
             {% if aktuelle_fahrt %}
                 <form method="POST" action="{% url 'fahrt_beenden' aktuelle_fahrt.id %}">
                     {% csrf_token %}
@@ -114,6 +114,43 @@
         </div>
     </div>
 </div>
+    <script>
+    // 1. WebSocket-Verbindung aufbauen
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const stellwerkSocket = new WebSocket(
+        wsScheme + '://' + window.location.host + '/ws/stellwerk/'
+    );
+
+    // Wenn der Server eine Nachricht schickt (z.B. Gleis zugewiesen oder "Warten")
+    stellwerkSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log("Nachricht vom Stellwerk:", data);
+
+        // Hier kannst du dein Interface updaten!
+        // Zum Beispiel den Text auf Monitor 1 anpassen:
+        if (data.status === 'update') {
+            alert(data.message); // Einfache Benachrichtigung für den Lokführer
+        }
+    };
+
+    stellwerkSocket.onclose = function(e) {
+        console.error('Stellwerk-Socket wurde unerwartet geschlossen.');
+    };
+
+    // 2. Event-Listener für den Button-Klick
+    document.getElementById('gleis-anfrage-btn').onclick = function(e) {
+    stellwerkSocket.send(JSON.stringify({
+        'type': 'einfahrt_anfrage'
+    }));
+    console.log("Einfahrt-Anfrage an das Stellwerk gesendet.");
+};
+    document.getElementById('fahren-btn').onclick = function(e) {
+        stellwerkSocket.send(JSON.stringify({
+            'type': 'zug_faehrt_los'
+        }));
+        console.log("Zug fährt in das zugewiesene Gleis ein.");
+    };
+</script>
 {% endblock %}
 
 
