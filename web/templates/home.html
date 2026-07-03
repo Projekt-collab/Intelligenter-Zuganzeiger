@@ -1,0 +1,107 @@
+{% extends "basis.html" %}
+
+{% block title %} Intelligenter-Zuganzeiger | Hauptseite {% endblock %}
+
+{% block content %}
+
+<div class="space-y-16 py-6 w-full">
+    <!-- HERO SECTION -->
+    <div class="flex flex-col lg:flex-row items-center gap-12 w-full">
+        <div class="w-full lg:w-1/2 space-y-6">
+            <span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full border border-indigo-200">Echtzeit-Stellwerk-Steuerung</span>
+            <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">Die Lokomotive steht bereit.<br><span class="text-indigo-600">Warten auf die richtige Fahrstraße.</span></h1>
+            <div class="space-y-4 text-gray-600 text-base sm:text-lg leading-relaxed">
+                <p>Herzlich willkommen beim <strong>„Intelligenten-Zuganzeiger“</strong>! Dieses Projekt simuliert eine automatisierte, digitale Stellwerk-Steuerung in Echtzeit на базе Django, Redis и WebSockets.</p>
+                <p>Der Zug am Bahnsteig symbolisiert den Systemstart: Wenn eine Lokomotive einfährt, fordert sie vollautomatisch ein freies Gleis an. Das Stellwerk prüft die Sensoren, aktiviert die Kollisionserkennung und reserviert die Fahrstraße für absolute Sicherheit.</p>
+            </div>
+            <div class="pt-2 flex flex-wrap gap-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dispatcher' %}" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-lg transition transform hover:-translate-y-0.5 shadow-md shadow-indigo-600/20">Zum Stellwerk UI (Dispatcher)</a>
+                    <a href="{% url 'lokfuehrer' %}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-6 py-3 rounded-lg transition transform hover:-translate-y-0.5 shadow-md">Als Lokführer öffnen</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-lg transition transform hover:-translate-y-0.5 shadow-md shadow-indigo-600/20">System starten</a>
+                {% endif %}
+            </div>
+        </div>
+        <!-- INTERAKTIVES SVG -->
+        <div class="w-full lg:w-1/2 flex justify-center">
+            <div class="relative group max-w-md w-full">
+                <div class="absolute -inset-1 bg-indigo-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
+                <div class="relative w-full h-[400px] rounded-2xl border border-gray-200 shadow-xl bg-slate-950 p-5 flex flex-col justify-between overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-indigo-400 font-bold">System-Status</span>
+                            <div class="text-base font-mono text-amber-400 font-bold mt-0.5 animate-pulse">⏳ WARTEN AUF WEICHENSTELLUNG</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs uppercase tracking-widest text-gray-400 font-bold">Zug-ID</span>
+                            <div class="text-sm font-mono text-white font-semibold">ICE-710</div>
+                        </div>
+                    </div>
+                    <svg class="absolute inset-0 w-full h-full p-4" viewBox="0 0 200 200" fill="none" xmlns="http://w3.org">
+                        <line x1="130" y1="50" x2="200" y2="50" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/><text x="135" y="44" fill="#ef4444" font-size="6" font-family="monospace">Gleis 1 [BELEGT]</text>
+                        <line x1="130" y1="80" x2="200" y2="80" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/><text x="135" y="74" fill="#ef4444" font-size="6" font-family="monospace">Gleis 2 [BELEGT]</text>
+                        <line x1="130" y1="110" x2="200" y2="110" stroke="#10b981" stroke-width="2"/><text x="135" y="104" fill="#10b981" font-size="6" font-family="monospace" class="animate-pulse">Gleis 3 [FREI]</text>
+                        <path d="M 60,110 L 130,50 M 60,110 L 130,80 M 10,110 L 130,110" stroke="#475569" stroke-width="2"/>
+                        <circle cx="60" cy="110" r="2.5" fill="#3b82f6"/><text x="52" y="120" fill="#94a3b8" font-size="5" font-family="monospace">Weiche W1</text>
+                        <line x1="75" y1="110" x2="75" y2="135" stroke="#64748b" stroke-width="1.5"/>
+                        <circle cx="75" cy="135" r="3.5" fill="#1e293b" stroke="#64748b"/><circle cx="75" cy="135" r="2" fill="#ef4444" class="animate-pulse"/><text x="83" y="137" fill="#ef4444" font-size="6" font-family="monospace" class="font-bold">Halt! Signal rot</text>
+                        <g transform="translate(15, 99)">
+                            <path d="M 0,4 L 32,4 Q 40,4 42,7 L 40,11 L 0,11 Z" fill="#f8fafc"/>
+                            <rect x="0" y="9.5" width="40" height="1.5" fill="#ef4444"/>
+                            <path d="M 32,5 L 38,5 L 40,7 L 35,7 Z" fill="#0f172a"/>
+                            <circle cx="8" cy="11" r="1.5" fill="#334155"/><circle cx="34" cy="11" r="1.5" fill="#334155"/>
+                        </g>
+                    </svg>
+                    <div class="bg-slate-900/95 p-2.5 rounded-xl border border-slate-800 text-[10px] font-mono space-y-1 text-slate-300">
+                        <div class="flex items-center justify-between text-indigo-400 font-semibold border-b border-slate-800 pb-1 mb-1"><span>📡 WebSocket Live-Protokoll</span><span class="text-[8px] bg-indigo-500/20 px-1 py-0.5 rounded text-indigo-300">JSON</span></div>
+                        <div><span class="text-indigo-400">LOK_REQ:</span> <span class="text-slate-100">{"request": "einfahrt", "lok": "ICE-710"}</span></div>
+                        <div class="text-slate-500 pl-2">↳ [Stellwerk] Prüfe Gleissensoren...</div>
+                        <div class="text-amber-400 animate-pulse">🎰 [Redis]: Warte auf Weichenfreigabe...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ARCHITEKTUR -->
+    <div class="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm w-full">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">⚙️ System-Architektur &amp; Protokoll-Abstraktion</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">Django &amp; MySQL</h3>
+                <p class="text-sm text-gray-600">Django wird für die Hauptlogik genutzt, MySQL für die dauerhafte Speicherung der Fahrpläne und Zugdaten.</p>
+            </div>
+            <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">Redis &amp; WebSockets</h3>
+                <p class="text-sm text-gray-600">Redis fungiert als Message Broker für die WebSockets zur Datenübertragung in Echtzeit.</p>
+            </div>
+            <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">JSON Protokoll</h3>
+                <p class="text-sm text-gray-600">Flexible Architektur, um nicht an feste Hardware gebunden zu sein, mittels JSON über WebSockets.</p>
+            </div>
+        </div>
+    </div>
+    <!-- SICHERHEIT -->
+    <div class="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm space-y-4 w-full">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">🛡️ Device-Sicherheit &amp; Kollisionserkennung</h2>
+        <p class="text-sm text-gray-600 leading-relaxed">Die mathematische Absicherung unseres Systems basiert auf einer strikten Regel: <span class="font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded">Gleisstatus == 0</span>. Ein Gleisabschnitt wird erst und nur dann für die Einfahrt freigegeben, wenn die Sensoren absolute Freiheit melden. Dies verhindert Fehlsteuerungen im Stellwerk UI komplett.</p>
+    </div>
+    <!-- ERGEBNISSE -->
+    <div class="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm space-y-4 w-full">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">🏆 Geplante Projektergebnisse</h2>
+        <ul class="text-sm text-gray-600 space-y-4 list-none pl-0">
+            <li class="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-indigo-600 font-bold text-lg leading-none">✓</span><div><strong class="text-gray-900 block mb-0.5">Echtzeit-Stellwerk UI:</strong> Ein übersichtliches Dashboard im Browser für den Fahrdienstleiter zur visuellen Überwachung.</div></li>
+            <li class="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-indigo-600 font-bold text-lg leading-none">✓</span><div><strong class="text-gray-900 block mb-0.5">Sicheres Protokoll:</strong> Ein fertiges, standardisiertes JSON-WebSocket-Protokoll zur Lok-Kommunikation.</div></li>
+            <li class="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-indigo-600 font-bold text-lg leading-none">✓</span><div><strong class="text-gray-900 block mb-0.5">Kollisionsfreie Steuerung:</strong> Ein vollständig getesteter Algorithmus zur automatischen Weichenstellung.</div></li>
+        </ul>
+    </div>
+    <!-- ROADMAP -->
+    <div class="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm w-full">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">📅 Entwicklungs-Fahrplan (Roadmap)</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+
+
+
+{% endblock %}
+
+
