@@ -49,9 +49,9 @@ def fahrt_beenden_view(request, fahrt_id):
     zug.status = "WARTET"
     zug.save()
 
-    fahrstrasse = Fahrstrasse.objects.filter(zug=zug, ist_aktiv=True, freigeschaltet_um__isnull=True).first()
+    fahrstrasse = Fahrstrasse.objects.filter(zug=zug, ist_aktiv=True).first()
     if fahrstrasse:
-        fahrstrasse.fahrt_ende = timezone.now()
+        fahrstrasse.freigeschaltet_um = timezone.now()
         fahrstrasse.ist_aktiv = False
         fahrstrasse.save()
 
