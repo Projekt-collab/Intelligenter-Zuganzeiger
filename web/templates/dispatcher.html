@@ -17,9 +17,14 @@
         <div class="w-1/4 pr-2">
             <div class="relative h-2 bg-red-500 rounded-full flex items-center">
                 <span class="absolute -top-6 left-0 text-xs text-slate-400 whitespace-nowrap">Hauptgleis 1</span>
-                <div class="absolute left-6 bg-slate-50 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(239,68,68,0.7)] border border-red-300">
-                    ICE 720
-                </div>
+
+                {% for anfrage in anfragen %}
+                    <div class="absolute bg-slate-50 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(239,68,68,0.7)] border border-red-300"
+                        style="right: calc(2rem + ({{ forloop.counter0 }} * 4rem));">
+                        {{ anfrage.zug.zug_nummer }}
+                    </div>
+                {% endfor %}
+
             </div>
         </div>
 
@@ -30,21 +35,29 @@
         </div>
 
         <div class="w-8/12 h-5/6 flex flex-col justify-between pl-2">
+            {% for gleis in gleise %}
+                {% if gleis.sensor_belegt %}
+                    <div class="relative h-2 bg-red-500 rounded-full flex items-center">
+                        <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">{{ gleis }}</span>
+                        {% if gleis.aktive_reservierung %}
+                            {# Da es eine Liste ist, nehmen wir mit .0 das erste (und einzige) Element #}
+                            {% with res=gleis.aktive_reservierung.0 %}
+                                <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
+                                    {{ res.zug }}
+                                </div>
+                            {% endwith %}
+                        {% endif %}
+                     </div>
+                {% else %}
+                    <div class="relative h-2 bg-emerald-500 rounded-full flex items-center">
+                        <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">{{ gleis }}</span>
+                    </div>
+                {% endif %}
+            {% endfor %}
 
-            <div class="relative h-2 bg-emerald-500 rounded-full flex items-center">
-                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis A (Frei)</span>
-            </div>
-
-            <div class="relative h-2 bg-red-500 rounded-full flex items-center">
-                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis B (Besetzt)</span>
-                <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
-                    RE 4200
-                </div>
-            </div>
-
-            <div class="relative h-2 bg-amber-500 rounded-full flex items-center">
+            <!--<div class="relative h-2 bg-amber-500 rounded-full flex items-center">
                 <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis C (Gesperrt)</span>
-            </div>
+            </div>-->
 
         </div>
 

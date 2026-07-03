@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from web.models import Zug, Fahrt, Fahrstrasse
+from web.models import Zug, Fahrt, Fahrstrasse, Gleis, StellwerkAnfrage
 
 
 # Create your views here.
@@ -31,11 +32,21 @@ def lokfuehrer_index(request):
 @login_required
 def dispatcher_index(request):
     ist_dispatcher = request.user.groups.filter(name='Dispatcher').exists()
+
     if not ist_dispatcher:
         messages.warning(request, "Sie sind kein Dispatcher")
         return redirect('register')
 
-    return TemplateResponse(request, "dispatcher.html", {})
+    anfragen = StellwerkAnfrage.objects.filter(zugewiesenes_gleis__isnull=True, ergebnis='ABGEWIESEN').all().order_by('anfrage_zeit')[:2]
+    aktive_fahrstrassen = Fahrstrasse.objects.filter(ist_aktiv=True).select_related('zug')
+    gleise = Gleis.objects.prefetch_related(
+        Prefetch('reservierungen', queryset=aktive_fahrstrassen, to_attr='aktive_reservierung')
+    ).order_by('gleis_nummer')
+
+    return TemplateResponse(request, "dispatcher.html", {
+        'anfragen': anfragen,
+        'gleise': gleise
+    })
 
 @login_required
 @require_POST  # Sorgt dafür, dass die Fahrt nur per POST-Methode (Sicherheits-Button) beendet werden kann
