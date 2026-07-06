@@ -90,5 +90,20 @@
       "gleis": 6,
       "freigeschaltet_um": "2026-06-24T12:00:00Z"
     }
+  },
+
+  {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "Dispatcher"
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+      "name": "Lokführer"
+    }
   }
 ]

@@ -8,55 +8,149 @@
     <header class="flex justify-between items-center border-b border-slate-700 pb-3 mb-10">
         <h2 class="text-xl font-bold tracking-wide text-slate-100">Zentralstellwerk - Bereich Nord</h2>
         <div class="text-sm bg-slate-900/50 px-3 py-1.5 rounded-md border border-slate-700">
-            System: <span class="text-emerald-400 font-bold animate-pulse">ONLINE</span>
+            System: <span id="system-status" class="text-emerald-400 font-bold animate-pulse">ONLINE</span>
         </div>
     </header>
 
+    <!-- LOG-MONITOR: Hier sehen wir sofort, was die Lokführer tun -->
+    <div id="stellwerk-log" class="mb-4 p-2 bg-slate-950 text-xs text-slate-400 rounded border border-slate-800 max-h-20 overflow-y-auto">
+        System bereit. Warte auf Zugmeldungen...
+    </div>
+
     <main class="relative flex items-center justify-start h-72 bg-slate-950 border border-slate-800 rounded-md p-6 overflow-hidden">
 
+        <!-- HIER: Hauptgleis 1 / Warteschlange -->
         <div class="w-1/4 pr-2">
             <div class="relative h-2 bg-red-500 rounded-full flex items-center">
-                <span class="absolute -top-6 left-0 text-xs text-slate-400 whitespace-nowrap">Hauptgleis 1</span>
-                <div class="absolute left-6 bg-slate-50 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(239,68,68,0.7)] border border-red-300">
-                    ICE 720
+                <span class="absolute -top-6 left-0 text-xs text-slate-400 whitespace-nowrap">Hauptgleis 1 (Zulauf)</span>
+
+                <!-- Чистый абсолютный контейнер, смещенный чуть вверх -->
+                <div id="wartende-zuege" class="absolute left-0 -top-3 w-full h-6">
+                    {% for anfrage in anfragen %}
+                        <div class="absolute bg-slate-50 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(239,68,68,0.7)] border border-red-300 whitespace-nowrap"
+                            style="right: calc(1rem + ({{ forloop.counter0 }} * 65px));">
+                            {{ anfrage.zug.zug_nummer }}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
 
+        <!-- Weichen-Grafik (statisch) -->
         <div class="w-1/12 h-full relative">
             <div class="absolute top-[28%] left-0 w-full h-1 bg-slate-600 origin-bottom-left rotate-[22deg]"></div>
             <div class="absolute top-1/2 left-0 w-full h-1 bg-red-500"></div>
             <div class="absolute top-[70%] left-0 w-full h-1 bg-slate-600 origin-top-left -rotate-[22deg]"></div>
         </div>
 
-        <div class="w-8/12 h-5/6 flex flex-col justify-between pl-2">
+        <!-- HIER: Bahnhofsgleise -->
+        <!-- HIER: Bahnhofsgleise -->
+        <div id="gleis-bereich" class="w-8/12 h-5/6 flex flex-col justify-between pl-2">
+            {% for gleis in gleise %}
+                <div id="gleis-container-{{ gleis.gleis_nummer }}" class="relative h-2 {% if gleis.sensor_belegt %}bg-red-500{% else %}bg-emerald-500{% endif %} rounded-full flex items-center">
+                    <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis {{ gleis.gleis_nummer }}</span>
 
-            <div class="relative h-2 bg-emerald-500 rounded-full flex items-center">
-                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis A (Frei)</span>
-            </div>
-
-            <div class="relative h-2 bg-red-500 rounded-full flex items-center">
-                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis B (Besetzt)</span>
-                <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
-                    RE 4200
-                </div>
-            </div>
-
-            <div class="relative h-2 bg-amber-500 rounded-full flex items-center">
-                <span class="absolute -top-6 left-2 text-xs text-slate-400 whitespace-nowrap">Gleis C (Gesperrt)</span>
-            </div>
-
+                    <div class="zug-label-platzhalter width-full">
+                        <!-- Richtige Abfrage für den ersten Seitenaufruf (Template-Rendering) -->
+                        {% for res in gleis.reservierungen.all %}
+                            {% if res.ist_aktiv %}
+                                <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
+                                    {{ res.zug.zug_nummer }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                 </div>
+            {% endfor %}
         </div>
 
     </main>
 
     <footer class="mt-8 flex gap-4">
-        <button class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm px-4 py-2.5 rounded-md shadow-md transition-colors cursor-pointer">
+        <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-2.5 rounded-md shadow-md transition-colors cursor-pointer">
             Weiche schalten
         </button>
-        <button class="bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-bold text-sm px-4 py-2.5 rounded-md shadow-md transition-colors cursor-pointer">
+        <button class="bg-red-600 hover:bg-red-500 text-white font-bold text-sm px-4 py-2.5 rounded-md shadow-md transition-colors cursor-pointer">
             Nothalt (Zentral)
         </button>
     </footer>
 </div>
+
+<!-- LIVE WEBSOCKET LOGIK -->
+<script>
+    const socket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
+        + window.location.host
+        + '/ws/stellwerk/'
+    );
+
+    socket.onopen = function(e) {
+        console.log("Stellwerks-Monitor erfolgreich mit Channel verbunden.");
+    };
+
+    socket.onmessage = function(e) {
+        const serverData = JSON.parse(e.data);
+
+        if (serverData.type === 'system_update') {
+            // 1. Log-Eintrag schreiben
+            const logBox = document.getElementById('stellwerk-log');
+            logBox.innerHTML = `[${new Date().toLocaleTimeString()}] ${serverData.message}<br>` + logBox.innerHTML;
+
+            const systemZustand = serverData.data;
+
+            // 2. Warteschlange (Hauptgleis 1) neu zeichnen
+            const wartendeZuegeDiv = document.getElementById('wartende-zuege');
+            wartendeZuegeDiv.innerHTML = '';
+
+            // Добавим console.log, чтобы в консоли браузера (F12) увидеть, что именно прилетает
+            console.log("Данные от сервера (Anfragen):", systemZustand.anfragen);
+
+            systemZustand.anfragen.forEach((anfrage, index) => {
+                // Считаем сдвиг в пикселях: первый 15px, второй 80px, третий 145px...
+                const rightOffset = 15 + (index * 65);
+
+                const zugBadges = `
+                    <div class="absolute bg-slate-50 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(239,68,68,0.7)] border border-red-300 whitespace-nowrap transition-all duration-300"
+                        style="right: ${rightOffset}px;">
+                        ${anfrage.zug_nummer}
+                    </div>`;
+
+                wartendeZuegeDiv.insertAdjacentHTML('beforeend', zugBadges);
+            });
+
+            // 3. Bahnhofsgleise aktualisieren (Farbe + Zug-Anzeige)
+            systemZustand.gleise.forEach(gleis => {
+                const gleisContainer = document.getElementById(`gleis-container-${gleis.gleis_nummer}`);
+                if (gleisContainer) {
+                    const labelPlatzhalter = gleisContainer.querySelector('.zug-label-platzhalter');
+
+                    if (gleis.sensor_belegt) {
+                        // Auf Rot schalten
+                        gleisContainer.className = "relative h-2 bg-red-500 rounded-full flex items-center";
+                        // Zug-Badge einblenden falls vorhanden
+                        if (gleis.zug) {
+                            labelPlatzhalter.innerHTML = `
+                                <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
+                                    ${gleis.zug}
+                                </div>`;
+                        } else {
+                            labelPlatzhalter.innerHTML = '';
+                        }
+                    } else {
+                        // Auf Grün schalten (Frei)
+                        gleisContainer.className = "relative h-2 bg-emerald-500 rounded-full flex items-center";
+                        labelPlatzhalter.innerHTML = '';
+                    }
+                }
+            });
+        }
+    };
+
+    socket.onclose = function(e) {
+        const statusText = document.getElementById('system-status');
+        statusText.textContent = "OFFLINE";
+        statusText.className = "text-red-500 font-bold";
+        console.error("Stellwerks-Verbindung abgebrochen.");
+    };
+</script>
 {% endblock %}
