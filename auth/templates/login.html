@@ -1,18 +1,26 @@
 {% extends 'basis.html' %}
 
-{% block title %}Anmelden - ProjektPortal{% endblock %}
+{% block title %}Anmelden - Intelligenter Zuganzeiger{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200 mt-10">
     <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">In Ihr Konto einloggen</h2>
-    
+
     <form method="post" class="space-y-4">
         {% csrf_token %}
         {% for field in form %}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
-                <div class="mt-1">
-                    {# Wir fügen CSS-Klassen direkt über Django-Templates hinzu #}
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    {# Изменяем стили полей на лету: добавляем видимый контур и внутренний отступ для текста pl-3 #}
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            let input = document.getElementById("{{ field.id_for_label }}");
+                            if (input) {
+                                input.className = "w-full border border-gray-300 rounded-lg pl-3 pr-3 py-2 text-gray-900 bg-white shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm";
+                            }
+                        });
+                    </script>
                     {{ field }}
                 </div>
                 {% if field.errors %}
@@ -20,12 +28,12 @@
                 {% endif %}
             </div>
         {% endfor %}
-        
+
         <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
             Einloggen
         </button>
     </form>
-    
+
     <p class="mt-4 text-center text-sm text-gray-600">
         Noch kein Konto? <a href="{% url 'register' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Jetzt registrieren</a>
     </p>
