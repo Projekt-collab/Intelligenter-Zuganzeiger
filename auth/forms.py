@@ -12,6 +12,17 @@ class UserRegistrationForm(UserCreationForm):
         label="Rolle"
     )
 
+    # Initialisierung zur Anpassung der Feld-Styles (Trello-Task)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            # Sichtbare Konturen (border-gray-300) und horizontaler Innenabstand (pl-3) hinzufügen
+            field.widget.attrs['class'] = (
+                'w-full border border-gray-300 rounded-lg pl-3 pr-3 py-2 '
+                'text-gray-900 bg-white shadow-sm focus:border-indigo-500 '
+                'focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm'
+            )
+
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "email")
