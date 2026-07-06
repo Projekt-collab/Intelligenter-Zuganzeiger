@@ -12,6 +12,8 @@ from channels.layers import get_channel_layer
 
 
 # Create your views here.
+def home_index(request):
+    return TemplateResponse(request,'home.html',{})
 @login_required
 def lokfuehrer_index(request):
     ist_lokfuehrer = request.user.groups.filter(name='Lokführer').exists()
