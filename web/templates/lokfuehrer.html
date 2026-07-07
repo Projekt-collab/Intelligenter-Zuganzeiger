@@ -57,9 +57,9 @@
 
         <!-- Немецкий светофор -->
         <div class="absolute top-[15%] right-[12%] w-8 h-24 bg-neutral-950 border-2 border-neutral-700 rounded-md flex flex-col justify-around items-center py-1 shadow-lg z-20">
-            <div class="w-5 h-5 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444] border border-red-400/50"></div>
-            <div class="w-5 h-5 rounded-full bg-amber-500 shadow-[0_0_12px_#f59e0b] border border-amber-400/50"></div>
-            <div class="w-5 h-5 rounded-full bg-emerald-500 shadow-[0_0_12px_#10b981] border border-emerald-400/50"></div>
+            <div id="light-red" class="w-5 h-5 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444] border border-red-400/50"></div>
+            <div id="light-yellow" class="w-5 h-5 rounded-full bg-amber-950/70 border border-amber-900/30"></div>
+            <div id="light-green" class="w-5 h-5 rounded-full bg-emerald-950/70 border border-emerald-900/30"></div>
             <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-2 h-8 bg-neutral-950"></div>
         </div>
 
@@ -74,9 +74,6 @@
         <div class="w-[33%] h-full bg-neutral-900 border-4 border-slate-700 rounded-lg p-2 shadow-inner relative flex items-center justify-center">
             <div class="w-full h-full bg-[#002b36] rounded border border-cyan-900 p-2 font-mono text-cyan-400 text-xs sm:text-sm overflow-hidden select-none">
                 <p class="text-emerald-400 font-bold mb-1">▶ SYSTEM OK</p>
-                <p>GESCHW: 120 km/h</p>
-                <p>LINIE: RE 1 (BERLIN)</p>
-                <p>BREMSE: LOESEN</p>
                 <p>LOCKFÜHRERNAME: {{ user.username }}</p>
                 <p>ZUGINFO: {{ aktuelle_fahrt }}</p>
             </div>
@@ -85,10 +82,10 @@
         <!-- Монитор 2 -->
         <div class="w-[33%] h-full bg-neutral-900 border-4 border-slate-700 rounded-lg p-2 shadow-inner relative flex items-center justify-center">
             <div class="w-full h-full bg-[#002b36] rounded border border-cyan-900 p-2 font-mono text-cyan-400 text-xs sm:text-sm overflow-hidden select-none">
-                <p class="text-amber-400 font-bold mb-1">⚡ LZB / PZB AKTIV</p>
-                <p>ZUGKRAFT: 45 %</p>
-                <p class="text-rose-400">NOTBREMSE: BEREIT</p>
-                <p>SPANNUNG: 15 kV</p>
+                <p class="text-amber-400 font-bold mb-1">⚡ Nachrichten</p>
+                <div id="monitor-2">
+
+                </div>
             </div>
         </div>
 
@@ -127,10 +124,26 @@
             window.location.href = "{% url 'dashboard' %}";
         }
 
-        // Hier kannst du dein Interface updaten!
-        // Zum Beispiel den Text auf Monitor 1 anpassen:
         if (data.status === 'update') {
-            alert(data.message); // Einfache Benachrichtigung für den Lokführer
+            const container = document.getElementById('monitor-2');
+            const p = document.createElement('p');
+            p.textContent = data.message;
+            container.prepend(p);
+
+            const redLight = document.getElementById('light-red');
+            const yellowLight = document.getElementById('light-yellow');
+            const greenLight = document.getElementById('light-green');
+
+            if (!greenLight.classList.contains('bg-emerald-500')) {
+                redLight.className = "w-5 h-5 rounded-full bg-red-950/70 border-red-900/30";
+                yellowLight.className = "w-5 h-5 rounded-full bg-amber-500 shadow-[0_0_12px_#f59e0b] border-amber-400/50";
+                setTimeout(() => {
+                    yellowLight.className = "w-5 h-5 rounded-full bg-amber-950/70 border border-amber-900/30";
+                    greenLight.className = "w-5 h-5 rounded-full bg-emerald-500 shadow-[0_0_12px_#10b981] border-emerald-400/50"
+                    console.log("2 sek warten");
+                }, 2000);
+            }
+
         }
     };
 
