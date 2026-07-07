@@ -1,14 +1,13 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Prefetch
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from web.models import Zug, Fahrt, Fahrstrasse, Gleis, StellwerkAnfrage
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from web.models import Fahrt, Fahrstrasse, Gleis, StellwerkAnfrage
+from web.utils import send_stellwerk_update
 
 
 # Create your views here.
@@ -77,32 +76,7 @@ def fahrt_beenden_view(request, fahrt_id):
             gleis.sensor_belegt = False
             gleis.save()
 
-    channel_layer = get_channel_layer()
-    anfragen = StellwerkAnfrage.objects.filter(ergebnis='OFFEN')  # или твоя новая Q-логика
-    anfragen_list = [{'zug_nummer': a.zug.zug_nummer} for a in anfragen]
-
-    gleise_liste = []
-    for g in Gleis.objects.all():
-        aktive_res = Fahrstrasse.objects.filter(gleis=g, ist_aktiv=True).select_related('zug').first()
-        gleise_liste.append({
-            'gleis_nummer': g.gleis_nummer,
-            'sensor_belegt': g.sensor_belegt,
-            'zug': aktive_res.zug.zug_nummer if aktive_res else None
-        })
-
-    aktueller_zustand = {
-        'anfragen': anfragen_list,
-        'gleise': gleise_liste
-    }
-
-    async_to_sync(channel_layer.group_send)(
-        'stellwerk_dispatcher',
-        {
-            'type': 'stellwerk_update_event',
-            'data': aktueller_zustand,
-            'log_message': f"🛑 {zug.zug_nummer} hat erfolgreich beendet"
-        }
-    )
+    send_stellwerk_update(f"🛑 {zug.zug_nummer} hat erfolgreich beendet")
 
     # Nach dem Beenden laden wir das Dashboard neu
     return redirect('dashboard')
