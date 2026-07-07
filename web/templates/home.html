@@ -11,7 +11,7 @@
             <span class="inline-block bg-indigo-50 text-indigo-700 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full border border-indigo-200">Echtzeit-Stellwerk-Steuerung</span>
             <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">Die Lokomotive steht bereit.<br><span class="text-indigo-600">Warten auf die richtige Fahrstraße.</span></h1>
             <div class="space-y-4 text-gray-600 text-base sm:text-lg leading-relaxed">
-                <p>Herzlich willkommen beim <strong>„Intelligenten-Zuganzeiger“</strong>! Dieses Projekt simuliert eine automatisierte, digitale Stellwerk-Steuerung in Echtzeit на базе Django, Redis и WebSockets.</p>
+                <p>Herzlich willkommen beim <strong>„Intelligenten-Zuganzeiger“</strong>! Dieses Projekt simuliert eine automatisierte, digitale Stellwerk-Steuerung in Echtzeit auf Basis von Django, Redis und WebSockets.</p>
                 <p>Der Zug am Bahnsteig symbolisiert den Systemstart: Wenn eine Lokomotive einfährt, fordert sie vollautomatisch ein freies Gleis an. Das Stellwerk prüft die Sensoren, aktiviert die Kollisionserkennung und reserviert die Fahrstraße für absolute Sicherheit.</p>
             </div>
             <div class="pt-2 flex flex-wrap gap-4">
@@ -65,19 +65,19 @@
     </div>
     <!-- ARCHITEKTUR -->
     <div class="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm w-full">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">⚙️ System-Architektur &amp; Protokoll-Abstraktion</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">⚙️ System-Architektur </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">Django &amp; MySQL</h3>
-                <p class="text-sm text-gray-600">Django wird für die Hauptlogik genutzt, MySQL für die dauerhafte Speicherung der Fahrpläne und Zugdaten.</p>
+                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">Django &amp; PostgreSQL</h3>
+                <p class="text-sm text-gray-600">Django wird für die Hauptlogik genutzt, PostgreSQL für die dauerhafte Speicherung der Fahrpläne und Zugdaten.</p>
             </div>
             <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
                 <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">Redis &amp; WebSockets</h3>
                 <p class="text-sm text-gray-600">Redis fungiert als Message Broker für die WebSockets zur Datenübertragung in Echtzeit.</p>
             </div>
             <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">JSON Protokoll</h3>
-                <p class="text-sm text-gray-600">Flexible Architektur, um nicht an feste Hardware gebunden zu sein, mittels JSON über WebSockets.</p>
+                <h3 class="font-bold text-gray-900 text-base mb-2 text-indigo-600">Celery Background Tasks</h3>
+                <p class="text-sm text-gray-600">Celery wird für verzögerte und automatisierte Aufgaben verwendet, wie z.B. das automatische Abfahren eines Zuges vom Gleis.</p>
             </div>
         </div>
     </div>
@@ -88,69 +88,13 @@
     </div>
     <!-- ERGEBNISSE -->
     <div class="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm space-y-4 w-full">
-        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">🏆 Geplante Projektergebnisse</h2>
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">🏆 Projektergebnisse</h2>
         <ul class="text-sm text-gray-600 space-y-4 list-none pl-0">
             <li class="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-indigo-600 font-bold text-lg leading-none">✓</span><div><strong class="text-gray-900 block mb-0.5">Echtzeit-Stellwerk UI:</strong> Ein übersichtliches Dashboard im Browser für den Fahrdienstleiter zur visuellen Überwachung.</div></li>
             <li class="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-indigo-600 font-bold text-lg leading-none">✓</span><div><strong class="text-gray-900 block mb-0.5">Sicheres Protokoll:</strong> Ein fertiges, standardisiertes JSON-WebSocket-Protokoll zur Lok-Kommunikation.</div></li>
             <li class="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-indigo-600 font-bold text-lg leading-none">✓</span><div><strong class="text-gray-900 block mb-0.5">Kollisionsfreie Steuerung:</strong> Ein vollständig getesteter Algorithmus zur automatischen Weichenstellung.</div></li>
         </ul>
     </div>
-    <!-- ROADMAP -->
-    <div class="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm w-full">
-        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">📅 Entwicklungs-Fahrplan (Roadmap)</h2>
-
-        <!-- Вертикальный контейнер, который автоматически тянется по ширине -->
-        <div class="space-y-4 w-full">
-
-            <!-- Phase 1 -->
-            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-                <div class="flex items-start gap-3">
-                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600">1</span>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">Django-Setup</h3>
-                        <p class="text-sm text-gray-600 mt-0.5">In Phase 1 machen wir das Django-Setup.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Phase 2 -->
-            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-                <div class="flex items-start gap-3">
-                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-600">2</span>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">WebSocket-Integration</h3>
-                        <p class="text-sm text-gray-600 mt-0.5">In Phase 2 folgt die WebSocket-Integration.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Phase 3 -->
-            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-                <div class="flex items-start gap-3">
-                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">3</span>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">Logik &amp; Tests</h3>
-                        <p class="text-sm text-gray-600 mt-0.5">Phase 3 ist für die Logik und Tests da.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Phase 4 -->
-            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-                <div class="flex items-start gap-3">
-                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">4</span>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">Frontend</h3>
-                        <p class="text-sm text-gray-600 mt-0.5">In Phase 4 finalisieren wir das Frontend.</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-
-
 
 {% endblock %}
 
