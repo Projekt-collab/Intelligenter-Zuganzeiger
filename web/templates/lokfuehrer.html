@@ -94,10 +94,6 @@
 
         <!-- Кнопки управления -->
         <div class="w-[30%] h-full flex items-center justify-around gap-2">
-            <div class="relative w-5 h-20 bg-zinc-600 rounded shadow-md flex-shrink-0">
-                <div class="absolute -top-1 -left-2 w-9 h-5 bg-rose-700 rounded border border-black shadow cursor-pointer"></div>
-            </div>
-            <button class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Warten</button>
             <button id="fahren-btn" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-600 border-4 border-neutral-900 text-[9px] sm:text-xs font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Fahren</button>
             <button id="gleis-anfrage-btn" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-600 border-4 border-neutral-900 text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider text-center flex items-center justify-center p-1">Gleis<br>anfr.</button>
             {% if aktuelle_fahrt %}
@@ -107,7 +103,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Fahrt jetzt beenden
+                            Fahrt beenden
                         </button>
                 </form>
             {% endif %}
