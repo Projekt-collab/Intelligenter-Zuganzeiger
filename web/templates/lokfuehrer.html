@@ -126,6 +126,11 @@
         const data = JSON.parse(e.data);
         console.log("Nachricht vom Stellwerk:", data);
 
+        if (data.status === 'befehl' && data.message === 'redirect_to_dashboard') {
+            console.log("Fahrt beendet. Redirection...");
+            window.location.href = "{% url 'dashboard' %}";
+        }
+
         // Hier kannst du dein Interface updaten!
         // Zum Beispiel den Text auf Monitor 1 anpassen:
         if (data.status === 'update') {
@@ -139,11 +144,11 @@
 
     // 2. Event-Listener für den Button-Klick
     document.getElementById('gleis-anfrage-btn').onclick = function(e) {
-    stellwerkSocket.send(JSON.stringify({
-        'type': 'einfahrt_anfrage'
-    }));
-    console.log("Einfahrt-Anfrage an das Stellwerk gesendet.");
-};
+        stellwerkSocket.send(JSON.stringify({
+            'type': 'einfahrt_anfrage'
+        }));
+        console.log("Einfahrt-Anfrage an das Stellwerk gesendet.");
+    };
     document.getElementById('fahren-btn').onclick = function(e) {
         stellwerkSocket.send(JSON.stringify({
             'type': 'zug_faehrt_los'
