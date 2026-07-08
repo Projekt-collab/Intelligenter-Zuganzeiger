@@ -161,7 +161,6 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
 
                 if bereits_reserviert:
                     # Der Lokführer fragt noch einmal, hat aber schon ein Gleis!
-                    # Wir geben ihm einfach die bestehende Reservierung zurück.
                     gleis_nummer = bereits_reserviert.zugewiesenes_gleis.gleis_nummer
                     return False, f"Du hast bereits eine Freigabe! Einfahrt erlaubt auf Gleis {gleis_nummer}."
                 # Verhindert, dass zwei Züge gleichzeitig dasselbe freie Gleis sehen
@@ -203,6 +202,11 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
             with transaction.atomic():
                 # Hole die exakt für diesen Zug aktivierte Fahrstraße
                 fahrstrasse = Fahrstrasse.objects.filter(zug=zug, ist_aktiv=True).select_related('gleis').first()
+                anfrage = StellwerkAnfrage.objects.filter(
+                    zug=zug,
+                    ergebnis='GENEHMIGT',
+                    zugewiesenes_gleis__isnull=False
+                ).first()
                 if not fahrstrasse:
                     return False, "Du hast noch keine Fahrstraßen-Freigabe!"
 
@@ -210,11 +214,13 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
                 gleis.sensor_belegt = True
                 gleis.save()
 
+                if anfrage:
+                    anfrage.ergebnis = 'BEENDEN'
+                    anfrage.save()
+
                 zug.status = 'GEPARKT'
                 zug.save()
 
-                # WICHTIG: Die Fahrstraße bleibt aktiv, damit der Dispatcher
-                # sieht, welcher Zug auf dem Gleis steht!
                 return True, f"Gleis {gleis.gleis_nummer} erfolgreich besetzt!"
         except Exception as e:
             print(f"Fehler beim Einfahren: {e}")

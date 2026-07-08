@@ -66,6 +66,16 @@ def fahrt_beenden_view(request, fahrt_id):
         zug.status = "WARTET"
         zug.save()
 
+        anfrage = StellwerkAnfrage.objects.filter(
+            zug=zug,
+            ergebnis='GENEHMIGT',
+            zugewiesenes_gleis__isnull=False
+        ).first()
+
+        if anfrage:
+            anfrage.ergebnis = 'BEENDEN'
+            anfrage.save()
+
         fahrstrasse = Fahrstrasse.objects.filter(zug=zug, ist_aktiv=True).first()
         if fahrstrasse:
             fahrstrasse.freigeschaltet_um = timezone.now()
