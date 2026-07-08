@@ -110,6 +110,7 @@ class StellwerkAnfrage(models.Model):
         ('OFFEN', 'In Bearbeitung / Zug wartet'),
         ('GENEHMIGT', 'Einfahrt erlaubt'),
         ('ABGEWIESEN', 'Kein Gleis frei / Bitte warten'),
+        ('BEENDEN', 'Abgeschlossen'),
     ]
 
     zug = models.ForeignKey(Zug, on_delete=models.CASCADE)
