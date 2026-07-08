@@ -41,7 +41,7 @@ def dispatcher_index(request):
         messages.warning(request, "Sie sind kein Dispatcher")
         return redirect('register')
 
-    anfragen = StellwerkAnfrage.objects.filter(zugewiesenes_gleis__isnull=True, ergebnis='ABGEWIESEN').all().order_by('anfrage_zeit')[:2]
+    anfragen = StellwerkAnfrage.objects.filter(ergebnis='GENEHMIGT').all().order_by('anfrage_zeit')[:2]
     aktive_fahrstrassen = Fahrstrasse.objects.filter(ist_aktiv=True).select_related('zug')
     gleise = Gleis.objects.prefetch_related(
         Prefetch('reservierungen', queryset=aktive_fahrstrassen, to_attr='aktive_reservierung')

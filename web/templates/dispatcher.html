@@ -53,7 +53,7 @@
                     <div class="zug-label-platzhalter width-full">
                         <!-- Richtige Abfrage für den ersten Seitenaufruf (Template-Rendering) -->
                         {% for res in gleis.reservierungen.all %}
-                            {% if res.ist_aktiv %}
+                            {% if res.ist_aktiv and res.gleis.sensor_belegt %}
                                 <div class="absolute left-16 bg-sky-400 text-slate-950 text-[11px] font-bold px-2 py-0.5 rounded shadow-[0_0_12px_rgba(56,189,248,0.7)] border border-sky-200">
                                     {{ res.zug.zug_nummer }}
                                 </div>

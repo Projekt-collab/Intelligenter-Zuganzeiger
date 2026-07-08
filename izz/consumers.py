@@ -130,7 +130,7 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_stellwerk_zustand(self):
         """Generiert den aktuellen Zustand für das dispatcher.html Template"""
-        anfragen = StellwerkAnfrage.objects.filter(ergebnis='OFFEN').select_related('zug')
+        anfragen = StellwerkAnfrage.objects.filter(ergebnis='GENEHMIGT').select_related('zug')
         anfragen_list = [{'zug_nummer': a.zug.zug_nummer} for a in anfragen]
 
         gleise_liste = []
