@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.db import transaction
-from web.models import Zug, Fahrt, Gleis, Fahrstrasse, StellwerkAnfrage
+from web.models import Fahrt, Gleis, Fahrstrasse, StellwerkAnfrage
 
 
 class StellwerkConsumer(AsyncWebsocketConsumer):
@@ -14,7 +14,7 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
             return
 
         # 1. Fall: Der User ist ein Dispatcher
-        ist_dispatcher = await self.check_ist_dispatcher(user)
+        ist_dispatcher = await self.check_group(user, 'Dispatcher')
         if ist_dispatcher:
             self.room_group_name = 'stellwerk_dispatcher'
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -22,7 +22,7 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
             print(f"🟢 Dispatcher {user} verbunden.")
             return
 
-        # 2. Fall: Der User ist ein Lokführer -> Holt den aktiven Zug
+        # 2. Fall: Der User ist ein Lokführer, dann holt den aktiven Zug
         zug = await self.get_aktiven_zug_fuer_user(user)
 
         if zug:
@@ -49,16 +49,16 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'status': 'error', 'message': 'Nicht eingeloggt!'}))
             return
 
-        # WICHTIG: Ein Dispatcher (is_staff) schickt keine Zug-Anfragen, sondern steuert das Stellwerk.
         # Lokführer brauchen zwingend einen aktiven Zug.
         zug = None
-        if not user.is_staff:
+        ist_dispatcher = await self.check_group(user, 'Dispatcher')
+        if not ist_dispatcher:
             zug = await self.get_aktiven_zug_fuer_user(user)
             if not zug:
                 await self.send(text_data=json.dumps({'status': 'error', 'message': 'Keine aktive Fahrt gefunden.'}))
                 return
 
-        # --- FALL 1: EINFART ANFRAGEN (Lokführer) ---
+        # --- FALL 1: EINFAHRT ANFRAGEN (Lokführer) ---
         if nachrichten_typ == 'einfahrt_anfrage' and zug:
             gleis_reserviert, info_nachricht = await self.versuche_gleis_reservierung(zug)
 
@@ -116,14 +116,15 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
     # =========================================================================
 
     @database_sync_to_async
-    def check_ist_dispatcher(self, user):
+    def check_group(self, user, group_name):
         """Prüft synchron in der DB, ob der User in der Gruppe 'Dispatcher' ist"""
-        return user.groups.filter(name='Dispatcher').exists()
+        return user.groups.filter(name=group_name).exists()
 
     @database_sync_to_async
     def get_aktiven_zug_fuer_user(self, user):
         """Findet den Zug, den der Lokführer gerade aktiv fährt"""
         fahrt = Fahrt.objects.filter(lokfuehrer=user, fahrt_ende__isnull=True).first()
+
         return fahrt.zug if fahrt else None
 
     @database_sync_to_async
@@ -151,6 +152,18 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
         """Sucht nach freien Gleisen und reserviert eins im Transaktionsblock mit Zeilensperre"""
         try:
             with transaction.atomic():
+                # Prüfen, ob der Zug bereits ein Gleis reserviert hat
+                bereits_reserviert = StellwerkAnfrage.objects.filter(
+                    zug=zug,
+                    ergebnis='GENEHMIGT',
+                    zugewiesenes_gleis__isnull=False
+                ).first()
+
+                if bereits_reserviert:
+                    # Der Lokführer fragt noch einmal, hat aber schon ein Gleis!
+                    # Wir geben ihm einfach die bestehende Reservierung zurück.
+                    gleis_nummer = bereits_reserviert.zugewiesenes_gleis.gleis_nummer
+                    return False, f"Du hast bereits eine Freigabe! Einfahrt erlaubt auf Gleis {gleis_nummer}."
                 # Verhindert, dass zwei Züge gleichzeitig dasselbe freie Gleis sehen
                 anfrage = StellwerkAnfrage.objects.create(zug=zug, ergebnis='OFFEN')
 
@@ -171,13 +184,16 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
 
                     zug.status = 'FAHRT'
                     zug.save()
+
                     return True, f"Einfahrt erlaubt auf Gleis {freies_gleis.gleis_nummer}!"
                 else:
                     anfrage.ergebnis = 'ABGEWIESEN'
                     anfrage.save()
+
                     return False, "Kein Gleis frei. Bitte warten am Einfahrtssignal!"
         except Exception as e:
             print(f"Datenbankfehler bei der Reservierung: {e}")
+
             return False, "Systemfehler bei der Gleissuche."
 
     @database_sync_to_async
@@ -202,4 +218,5 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
                 return True, f"Gleis {gleis.gleis_nummer} erfolgreich besetzt!"
         except Exception as e:
             print(f"Fehler beim Einfahren: {e}")
+
             return False, "Systemfehler beim Einfahrvorgang."
