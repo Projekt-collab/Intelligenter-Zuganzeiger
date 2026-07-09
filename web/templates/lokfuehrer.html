@@ -11,7 +11,7 @@
         <div class="absolute inset-0 bg-gradient-to-b from-sky-400 via-sky-200 to-transparent z-0"></div>
         <div class="absolute bottom-0 w-full h-[45%] bg-gradient-to-b from-slate-500 via-slate-600 to-slate-700 z-0"></div>
 
-        <svg class="absolute bottom-0 left-0 w-full h-[45%] z-10" viewBox="0 0 1000 100" preserveAspectRatio="none">
+        <svg id="view-rails" class="absolute bottom-0 left-0 w-full h-[45%] z-10" viewBox="0 0 1000 100" preserveAspectRatio="none">
             <path d="M 350,100 L 650,100 L 638,82 L 362,82 Z" fill="#2d3748"></path>
             <path d="M 380,70  L 620,70  L 610,58 L 390,58 Z" fill="#334155" opacity="0.9"></path>
 
@@ -41,8 +41,41 @@
             <path d="M 550 44 L 535 44 L 540 50 Z" fill="#94a3b8" opacity="0.9"></path>
         </svg>
 
+        <svg id="view-station" class="absolute bottom-0 left-0 w-full h-[45%] z-10 hidden" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <rect width="1000" height="100" fill="#cbd5e1" />
+
+            <path d="M 0,0 L 1000,0 L 1000,15 L 600,15 L 400,25 L 0,15 Z" fill="#475569" opacity="0.8"/>
+            <line x1="0" y1="15" x2="400" y2="25" stroke="#334155" stroke-width="2"/>
+            <line x1="1000" y1="15" x2="600" y2="15" stroke="#334155" stroke-width="2"/>
+
+            <path d="M 0,100 L 350,100 L 460,45 L 0,45 Z" fill="#64748b" />
+            <path d="M 335,100 L 350,100 L 460,45 L 455,45 Z" fill="#eab308" />
+            <line x1="335" y1="0" x2="335" y2="100" stroke="#334155" stroke-width="3" opacity="0.4"/>
+
+            <path d="M 350,100 L 650,100 L 540,45 L 460,45 Z" fill="#475569"/>
+
+            <line x1="365" y1="95" x2="635" y2="95" stroke="#1e293b" stroke-width="4"/>
+            <line x1="380" y1="85" x2="620" y2="85" stroke="#1e293b" stroke-width="3.5"/>
+            <line x1="395" y1="75" x2="605" y2="75" stroke="#1e293b" stroke-width="3"/>
+            <line x1="410" y1="66" x2="590" y2="66" stroke="#1e293b" stroke-width="2.5"/>
+            <line x1="425" y1="58" x2="575" y2="58" stroke="#1e293b" stroke-width="2"/>
+            <line x1="440" y1="51" x2="560" y2="51" stroke="#1e293b" stroke-width="1.5"/>
+            <line x1="450" y1="46" x2="550" y2="46" stroke="#1e293b" stroke-width="1"/>
+
+            <path d="M 380,100 L 475,45" fill="none" stroke="#cbd5e1" stroke-width="3.5"/>
+            <path d="M 620,100 L 525,45" fill="none" stroke="#cbd5e1" stroke-width="3.5"/>
+
+            <path d="M 650,100 L 1000,100 L 1000,45 L 540,45 Z" fill="#57534e"/>
+            <path d="M 670,100 L 1000,100 L 1000,35 L 550,35 Z" fill="#f8fafc" />
+            <path d="M 700,85 L 1000,75 L 1000,70 L 560,45 Z" fill="#ef4444"/>
+            <path d="M 740,60 L 1000,55 L 1000,50 L 580,40 Z" fill="#1e293b" opacity="0.85"/>
+
+            <rect x="80" y="8" width="300" height="20" fill="#1e3a8a" stroke="#fff" stroke-width="1" rx="2"/>
+            <text x="230" y="22" font-family="sans-serif" font-size="10" fill="#ffffff" font-weight="bold" text-anchor="middle">BERLIN HAUPTBAHNHOF • Gleis </text>
+        </svg>
+
         <!-- Ampel -->
-        <div class="absolute top-[15%] right-[12%] w-8 h-24 bg-neutral-950 border-2 border-neutral-700 rounded-md flex flex-col justify-around items-center py-1 shadow-lg z-20">
+        <div id="lok-ampel" class="absolute top-[15%] right-[12%] w-8 h-24 bg-neutral-950 border-2 border-neutral-700 rounded-md flex flex-col justify-around items-center py-1 shadow-lg z-20">
             <div id="light-red" class="w-5 h-5 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444] border border-red-400/50"></div>
             <div id="light-yellow" class="w-5 h-5 rounded-full bg-amber-950/70 border border-amber-900/30"></div>
             <div id="light-green" class="w-5 h-5 rounded-full bg-emerald-950/70 border border-emerald-900/30"></div>
@@ -149,6 +182,9 @@
             'type': 'zug_faehrt_los'
         }));
         console.log("Zug fährt in das zugewiesene Gleis ein.");
+        document.getElementById('view-rails').classList.add('hidden');       // Прячет рельсы
+        document.getElementById('view-station').classList.remove('hidden');  // Показывает вокзал
+        document.getElementById('lok-ampel').classList.add('hidden')
     };
 </script>
 {% endblock %}
