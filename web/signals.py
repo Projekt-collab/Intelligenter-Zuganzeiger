@@ -12,5 +12,5 @@ def fahrstrasse_erstellt_trigger(sender, instance, created, **kwargs):
 
         gleis_automatisch_freigeben.apply_async(
             args=[instance.id],
-            countdown=120
+            countdown=45
         )
