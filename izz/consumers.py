@@ -78,10 +78,10 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
 
         # --- FALL 2: ZUG FÄHRT LOS (Lokführer) ---
         elif nachrichten_typ == 'zug_faehrt_los' and zug:
-            erfolg, info_nachricht = await self.belege_gleis_fuer_zug(zug)
+            erfolg, info_nachricht, gleis = await self.belege_gleis_fuer_zug(zug)
             if erfolg:
                 # 1. Antwort direkt an den Lokführer schicken
-                await self.send(text_data=json.dumps({'status': 'update', 'message': info_nachricht}))
+                await self.send(text_data=json.dumps({'status': 'update', 'message': info_nachricht, 'gleis': gleis}))
 
                 # 2. Update an ALLE Dispatcher in der Gruppe senden
                 aktueller_zustand = await self.get_stellwerk_zustand()
@@ -221,7 +221,7 @@ class StellwerkConsumer(AsyncWebsocketConsumer):
                 zug.status = 'GEPARKT'
                 zug.save()
 
-                return True, f"Gleis {gleis.gleis_nummer} erfolgreich besetzt!"
+                return True, f"Gleis {gleis.gleis_nummer} erfolgreich besetzt!", gleis.gleis_nummer
         except Exception as e:
             print(f"Fehler beim Einfahren: {e}")
 
